@@ -4,8 +4,15 @@ import appContext from "./appContext";
 const defaultState = {
   userLoginTokenId: null,
   profileUpdated: false,
+  emailVerified: false,
 };
 const reducer = (state, action) => {
+  if (action.type === "VERIFYEMAIL") {
+    return {
+      ...state,
+      emailVerified: true,
+    };
+  }
   if (action.type === "UPDATEPROFILE") {
     return {
       ...state,
@@ -37,10 +44,18 @@ const AppContextProvider = (props) => {
     });
   };
 
+  const verifyEmail = () => {
+    dispatch({
+      type: "VERIFYEMAIL",
+    });
+  };
+
   const contextValue = {
     userLoginTokenId: allState.userLoginTokenId,
+    emailVerified: allState.emailVerified,
     profileUpdated: allState.profileUpdated,
     updatingProfile: updatingProfile,
+    verifyEmail: verifyEmail,
     saveUserTokenId: saveUserTokenId,
   };
   return (

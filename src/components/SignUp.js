@@ -62,6 +62,7 @@ const SignUp = () => {
       if (data.displayName && data.profilePicture) {
         ctx.updatingProfile();
       }
+
       nav("/");
     } catch (err) {
       console.log(err);
