@@ -8,7 +8,7 @@ const Header = () => {
         <div className="flex items-center">
           <h1 className="text-2xl font-bold mx-4 my2">MyWebLink</h1>
           <ul className="flex">
-            <Link to="/home">
+            <Link to="/">
               <li className="mx-2">Home</li>
             </Link>
             <li className="mx-2">Products</li>

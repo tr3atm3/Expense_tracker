@@ -17,7 +17,7 @@ function App() {
       <div className="mt-12">
         <Routes>
           <Route element={<PrivateRoute />}>
-            <Route path="/home" element={<Home />} />
+            <Route path="/" element={<Home />} />
           </Route>
 
           <Route path="/login" element={<SignUp />} />

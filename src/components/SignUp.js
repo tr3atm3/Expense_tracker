@@ -59,7 +59,7 @@ const SignUp = () => {
       }
       console.log(data);
       ctx.saveUserTokenId(data.idToken);
-      nav("/home");
+      nav("/");
     } catch (err) {
       console.log(err);
     }
