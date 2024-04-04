@@ -29,6 +29,7 @@ const UserContactDetails = ({ handleCancel }) => {
     e.preventDefault();
     updateProfile();
     handleCancel();
+    ctx.updatingProfile();
     fullName.current.value = "";
     profilePhotoUrl.current.value = "";
   };
