@@ -7,6 +7,12 @@ const defaultState = {
   emailVerified: false,
 };
 const reducer = (state, action) => {
+  if (action.type === "REMOVEID") {
+    return {
+      ...state,
+      userLoginTokenId: null,
+    };
+  }
   if (action.type === "VERIFYEMAIL") {
     return {
       ...state,
@@ -30,6 +36,12 @@ const reducer = (state, action) => {
 
 const AppContextProvider = (props) => {
   const [allState, dispatch] = useReducer(reducer, defaultState);
+
+  const removeUserTokenId = () => {
+    dispatch({
+      type: "REMOVEID",
+    });
+  };
 
   const saveUserTokenId = (id) => {
     dispatch({
@@ -57,6 +69,7 @@ const AppContextProvider = (props) => {
     updatingProfile: updatingProfile,
     verifyEmail: verifyEmail,
     saveUserTokenId: saveUserTokenId,
+    removeUserTokenId: removeUserTokenId,
   };
   return (
     <appContext.Provider value={contextValue}>
