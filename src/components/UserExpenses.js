@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import appContext from "./context/appContext";
 
 const UserExpenses = () => {
@@ -8,13 +8,13 @@ const UserExpenses = () => {
 
   const [expenseList, setExpenseList] = useState([]);
   const ctx = useContext(appContext);
-  console.log(expenseList);
+
   const userEmail = ctx.userLoginInfo.email
     .split("")
     .filter((word) => word.charCodeAt(0) >= 97 && word.charCodeAt(0) <= 122)
     .join("");
 
-  const gettingData = async () => {
+  const gettingData = useCallback(async () => {
     try {
       const response = await fetch(
         `https://react-deployment-demo-f24d5-default-rtdb.asia-southeast1.firebasedatabase.app/${userEmail}/expenses.json`
@@ -31,14 +31,14 @@ const UserExpenses = () => {
           id: key,
         });
       }
-      setExpenseList((prev) => [...prev, ...dataArr]);
+      setExpenseList((prev) => [...dataArr]);
     } catch (err) {
       console.log(err.message);
     }
-  };
+  }, [userEmail]);
   useEffect(() => {
     gettingData();
-  }, []);
+  }, [gettingData]);
 
   const postingData = async () => {
     try {
@@ -83,9 +83,39 @@ const UserExpenses = () => {
     setCategoryValue("fees");
     setDescriptionValue("");
   };
+  const deletingData = async (id) => {
+    try {
+      const response = await fetch(
+        `https://react-deployment-demo-f24d5-default-rtdb.asia-southeast1.firebasedatabase.app/${userEmail}/expenses/${id}.json`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        throw new Error(response.message);
+      }
+      // const data = await response.json();
+      console.log("Item Deleted Succesfully");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleEditBtn = (id) => {
+    const [editItem] = expenseList.filter((item) => item.id === id);
+    console.log(editItem);
+    setAmountValue(editItem.amount);
+    setCategoryValue(editItem.category);
+    setDescriptionValue(editItem.description);
+    handleDeleteBtn(id);
+  };
+
+  const handleDeleteBtn = (id) => {
+    deletingData(id);
+    setExpenseList((prev) => prev.filter((item) => item.id !== id));
+  };
   return (
     <div className="flex w-[80%] mx-auto mt-20">
-      <div className="w-1/2 text-center">
+      <div className="w-1/3 text-center mr-4">
         <h2 className="font-bold text-xl">Add to Expenses</h2>
         <form
           className="border border-gray-300 flex flex-col p-4"
@@ -127,12 +157,12 @@ const UserExpenses = () => {
           <button className="bg-blue-300 p-2 rounded-lg">Add</button>
         </form>
       </div>
-      <div className="w-1/2 text-center bg-slate-300">
+      <div className="flex-1 text-center bg-slate-300">
         <h2 className="font-bold text-xl">Expenses</h2>
-        <div className="flex justify-between p-4">
-          <h3>Amount</h3>
-          <h3>Description</h3>
-          <h3>Category</h3>
+        <div className="flex justify-between p-4 w-[80%]">
+          <h3 className="text-lg font-bold">Amount</h3>
+          <h3 className="text-lg font-bold">Description</h3>
+          <h3 className="text-lg font-bold">Category</h3>
         </div>
         <ul className="w-full p-4">
           {expenseList.map((item) => (
@@ -140,9 +170,23 @@ const UserExpenses = () => {
               key={item.id}
               className="flex justify-between items-center my-2"
             >
-              <p>₹{item.amount}</p>
-              <p className="max-w-[30%]">{item.description}</p>
-              <p>{item.category}</p>
+              <div className=" flex w-[80%] justify-between">
+                <p>₹{item.amount}</p>
+                <p className="">{item.description}</p>
+                <p>{item.category}</p>
+              </div>
+              <button
+                className="bg-green-400 py-1 px-2 rounded-lg"
+                onClick={() => handleEditBtn(item.id)}
+              >
+                Edit
+              </button>
+              <button
+                className="bg-red-600 py-1 px-2 rounded-lg"
+                onClick={() => handleDeleteBtn(item.id)}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
