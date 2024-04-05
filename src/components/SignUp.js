@@ -113,9 +113,6 @@ const SignUp = () => {
         }
       }
     }
-    emailRef.current.value = "";
-    passwordRef.current.value = "";
-    confirmPasswordRef.current.value = "";
   };
 
   const handleForgot = () => {

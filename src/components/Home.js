@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import UserContactDetails from "../UserContactDetails";
 import appContext from "./context/appContext";
+import UserExpenses from "./UserExpenses";
 
 const Home = () => {
   const [isProfileComplete, setIsProfileComplete] = useState(false);
@@ -30,6 +31,7 @@ const Home = () => {
         throw new Error(response.message);
       }
       console.log(data);
+      alert("Verification link sent to the email.");
     } catch (err) {
       alert(err);
     }
@@ -69,6 +71,7 @@ const Home = () => {
       {isProfileComplete && (
         <UserContactDetails handleCancel={handleCancelBtn} />
       )}
+      <UserExpenses />
     </div>
   );
 };
