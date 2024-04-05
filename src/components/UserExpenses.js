@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import appContext from "./context/appContext";
 
 const UserExpenses = () => {
   const [amountValue, setAmountValue] = useState("");
@@ -6,18 +7,78 @@ const UserExpenses = () => {
   const [categoryValue, setCategoryValue] = useState("fees");
 
   const [expenseList, setExpenseList] = useState([]);
+  const ctx = useContext(appContext);
   console.log(expenseList);
+  const userEmail = ctx.userLoginInfo.email
+    .split("")
+    .filter((word) => word.charCodeAt(0) >= 97 && word.charCodeAt(0) <= 122)
+    .join("");
+
+  const gettingData = async () => {
+    try {
+      const response = await fetch(
+        `https://react-deployment-demo-f24d5-default-rtdb.asia-southeast1.firebasedatabase.app/${userEmail}/expenses.json`
+      );
+      if (!response.ok) {
+        throw new Error(response.message);
+      }
+      const data = await response.json();
+
+      const dataArr = [];
+      for (const [key, value] of Object.entries(data)) {
+        dataArr.push({
+          ...value,
+          id: key,
+        });
+      }
+      setExpenseList((prev) => [...prev, ...dataArr]);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  useEffect(() => {
+    gettingData();
+  }, []);
+
+  const postingData = async () => {
+    try {
+      const response = await fetch(
+        `https://react-deployment-demo-f24d5-default-rtdb.asia-southeast1.firebasedatabase.app/${userEmail}/expenses.json`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            amount: amountValue,
+            description: descriptionValue,
+            category: categoryValue,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(response.message);
+      }
+      const data = await response.json();
+      console.log(data);
+      setExpenseList((prev) => [
+        ...prev,
+        {
+          id: data.name,
+          amount: amountValue,
+          description: descriptionValue,
+          category: categoryValue,
+        },
+      ]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    setExpenseList((prev) => [
-      ...prev,
-      {
-        id: Math.random(),
-        amount: amountValue,
-        description: descriptionValue,
-        category: categoryValue,
-      },
-    ]);
+
+    postingData();
     setAmountValue("");
     setCategoryValue("fees");
     setDescriptionValue("");
@@ -44,6 +105,7 @@ const UserExpenses = () => {
             className="w-full border border-gray-300 p-2 rounded-lg my-4"
             value={descriptionValue}
             onChange={(e) => setDescriptionValue(e.target.value)}
+            maxLength="50"
             required
           />
           <label htmlFor="cateory" className="text-left mb-1 pl-3">

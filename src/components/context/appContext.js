@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 const appContext = createContext({
-  userLoginTokenId: null,
+  userLoginInfo: null,
   profileUpdated: false,
   emailVerified: false,
 });

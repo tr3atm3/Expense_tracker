@@ -7,7 +7,7 @@ import appContext from "./components/context/appContext";
 
 const PrivateRoute = () => {
   let ctx = useContext(appContext);
-  return ctx.userLoginTokenId ? <Outlet /> : <Navigate to="/login" />;
+  return ctx.userLoginInfo !== null ? <Outlet /> : <Navigate to="/login" />;
 };
 
 function App() {

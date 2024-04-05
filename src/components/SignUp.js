@@ -11,6 +11,7 @@ const SignUp = () => {
   const nav = useNavigate();
   const [isForgetPassword, setIsForgetPassword] = useState(false);
 
+  console.log(ctx);
   const signUpFunction = async () => {
     try {
       const response = await fetch(
@@ -59,7 +60,10 @@ const SignUp = () => {
         throw new Error(response.message);
       }
       console.log(data);
-      ctx.saveUserTokenId(data.idToken);
+      ctx.saveUserInfo({
+        loginId: data.idToken,
+        email: data.email,
+      });
       if (data.displayName && data.profilePicture) {
         ctx.updatingProfile();
       }

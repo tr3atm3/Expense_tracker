@@ -2,7 +2,7 @@ import { useReducer } from "react";
 import appContext from "./appContext";
 
 const defaultState = {
-  userLoginTokenId: null,
+  userLoginInfo: null,
   profileUpdated: false,
   emailVerified: false,
 };
@@ -10,7 +10,7 @@ const reducer = (state, action) => {
   if (action.type === "REMOVEID") {
     return {
       ...state,
-      userLoginTokenId: null,
+      userLoginInfo: null,
     };
   }
   if (action.type === "VERIFYEMAIL") {
@@ -28,7 +28,10 @@ const reducer = (state, action) => {
   if (action.type === "TOKENID") {
     return {
       ...state,
-      userLoginTokenId: action.value,
+      userLoginInfo: {
+        loginID: action.value.loginId,
+        email: action.value.email,
+      },
     };
   }
   return defaultState;
@@ -43,10 +46,10 @@ const AppContextProvider = (props) => {
     });
   };
 
-  const saveUserTokenId = (id) => {
+  const saveUserInfo = (value) => {
     dispatch({
       type: "TOKENID",
-      value: id,
+      value: value,
     });
   };
   const updatingProfile = () => {
@@ -63,12 +66,12 @@ const AppContextProvider = (props) => {
   };
 
   const contextValue = {
-    userLoginTokenId: allState.userLoginTokenId,
+    userLoginInfo: allState.userLoginInfo,
     emailVerified: allState.emailVerified,
     profileUpdated: allState.profileUpdated,
     updatingProfile: updatingProfile,
     verifyEmail: verifyEmail,
-    saveUserTokenId: saveUserTokenId,
+    saveUserInfo: saveUserInfo,
     removeUserTokenId: removeUserTokenId,
   };
   return (
