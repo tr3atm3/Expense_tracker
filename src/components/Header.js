@@ -4,14 +4,21 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { removeUserTokenId } from "./context/authSlice";
+import { toggleMode } from "./context/themeSlice";
 
 const Header = () => {
   const auth = useSelector((store) => store.auth);
+  const theme = useSelector((store) => store.theme);
+  const expenseList = useSelector((store) => store.expenses.expenseList);
   const dispatch = useDispatch();
   const nav = useNavigate();
   const handleLogout = () => {
     dispatch(removeUserTokenId());
     nav("/login");
+  };
+  const handleDownload = () => {};
+  const handleMode = () => {
+    dispatch(toggleMode());
   };
   console.log(auth);
   return (
@@ -32,6 +39,20 @@ const Header = () => {
             </Link>
           </ul>
         </div>
+        {theme.premiumBuyed && (
+          <button onClick={handleMode}>
+            {theme.darkMode ? "Light" : "Dark"}
+          </button>
+        )}
+        {theme.premiumBuyed && (
+          <a
+            href={URL.createObjectURL(new Blob(expenseList))}
+            download="expenses.csv"
+            onClick={handleDownload}
+          >
+            Download Exp
+          </a>
+        )}
         {auth.userLoginInfo && (
           <div>
             <button onClick={handleLogout}>Logout</button>

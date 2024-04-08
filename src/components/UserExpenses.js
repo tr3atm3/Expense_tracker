@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteExpenseItem, setExpenseList } from "./context/expenseSlice";
+import { setPremiumTrue, toggleMode } from "./context/themeSlice";
 
 const UserExpenses = () => {
   const [amountValue, setAmountValue] = useState("");
@@ -9,10 +10,10 @@ const UserExpenses = () => {
 
   const auth = useSelector((store) => store.auth);
   const expenses = useSelector((store) => store.expenses);
-  console.log(expenses);
-  const dispatch = useDispatch();
 
-  console.log(auth);
+  const dispatch = useDispatch();
+  console.log(expenses);
+  // console.log(auth);
   const userEmail = auth.userLoginInfo?.email
     .split("")
     .filter((word) => word.charCodeAt(0) >= 97 && word.charCodeAt(0) <= 122)
@@ -80,11 +81,14 @@ const UserExpenses = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-
-    postingData();
-    setAmountValue("");
-    setCategoryValue("fees");
-    setDescriptionValue("");
+    if (expenses.totalExpenses + amountValue <= 10000) {
+      postingData();
+      setAmountValue("");
+      setCategoryValue("fees");
+      setDescriptionValue("");
+    } else {
+      alert("Buy Premium");
+    }
   };
   const deletingData = async (id) => {
     try {
@@ -105,7 +109,7 @@ const UserExpenses = () => {
     }
   };
   const handleEditBtn = (id) => {
-    const [editItem] = expenses.filter((item) => item.id === id);
+    const [editItem] = expenses.expenseList.filter((item) => item.id === id);
     console.log(editItem);
     setAmountValue(editItem.amount);
     setCategoryValue(editItem.category);
@@ -113,6 +117,10 @@ const UserExpenses = () => {
     handleDeleteBtn(id);
   };
 
+  const handlePremium = () => {
+    dispatch(setPremiumTrue());
+    dispatch(toggleMode());
+  };
   const handleDeleteBtn = (id) => {
     deletingData(id);
   };
@@ -168,7 +176,7 @@ const UserExpenses = () => {
           <h3 className="text-lg font-bold">Category</h3>
         </div>
         <ul className="w-full p-4">
-          {expenses.map((item) => (
+          {expenses.expenseList.map((item) => (
             <li
               key={item.id}
               className="flex justify-between items-center my-2"
@@ -193,6 +201,11 @@ const UserExpenses = () => {
             </li>
           ))}
         </ul>
+        {expenses.totalExpenses >= 10000 && (
+          <button onClick={handlePremium} className="bg-red-400">
+            Premium
+          </button>
+        )}
       </div>
     </div>
   );

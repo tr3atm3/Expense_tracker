@@ -10,8 +10,9 @@ const PrivateRoute = () => {
 };
 
 function App() {
+  const theme = useSelector((store) => store.theme);
   return (
-    <div className="App">
+    <div className={`App ${theme.darkMode && "bg-black"}`}>
       <Header />
       <div className="mt-12">
         <Routes>
