@@ -1,13 +1,12 @@
-import { Navigate, Outlet, Route, Router, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import SignUp from "./components/SignUp";
 import Home from "./components/Home";
-import { useContext } from "react";
-import appContext from "./components/context/appContext";
+import { useSelector } from "react-redux";
 
 const PrivateRoute = () => {
-  let ctx = useContext(appContext);
-  return ctx.userLoginInfo !== null ? <Outlet /> : <Navigate to="/login" />;
+  const auth = useSelector((store) => store.auth);
+  return auth.userLoginInfo !== null ? <Outlet /> : <Navigate to="/login" />;
 };
 
 function App() {

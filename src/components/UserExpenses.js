@@ -1,15 +1,19 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import appContext from "./context/appContext";
+import React, { useCallback, useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteExpenseItem, setExpenseList } from "./context/expenseSlice";
 
 const UserExpenses = () => {
   const [amountValue, setAmountValue] = useState("");
   const [descriptionValue, setDescriptionValue] = useState("");
   const [categoryValue, setCategoryValue] = useState("fees");
 
-  const [expenseList, setExpenseList] = useState([]);
-  const ctx = useContext(appContext);
+  const auth = useSelector((store) => store.auth);
+  const expenses = useSelector((store) => store.expenses);
+  console.log(expenses);
+  const dispatch = useDispatch();
 
-  const userEmail = ctx.userLoginInfo.email
+  console.log(auth);
+  const userEmail = auth.userLoginInfo?.email
     .split("")
     .filter((word) => word.charCodeAt(0) >= 97 && word.charCodeAt(0) <= 122)
     .join("");
@@ -31,7 +35,7 @@ const UserExpenses = () => {
           id: key,
         });
       }
-      setExpenseList((prev) => [...dataArr]);
+      dispatch(setExpenseList());
     } catch (err) {
       console.log(err.message);
     }
@@ -61,15 +65,14 @@ const UserExpenses = () => {
       }
       const data = await response.json();
       console.log(data);
-      setExpenseList((prev) => [
-        ...prev,
-        {
+      dispatch(
+        setExpenseList({
           id: data.name,
           amount: amountValue,
           description: descriptionValue,
           category: categoryValue,
-        },
-      ]);
+        })
+      );
     } catch (err) {
       console.log(err);
     }
@@ -95,13 +98,14 @@ const UserExpenses = () => {
         throw new Error(response.message);
       }
       // const data = await response.json();
+      dispatch(deleteExpenseItem(id));
       console.log("Item Deleted Succesfully");
     } catch (err) {
       console.log(err);
     }
   };
   const handleEditBtn = (id) => {
-    const [editItem] = expenseList.filter((item) => item.id === id);
+    const [editItem] = expenses.filter((item) => item.id === id);
     console.log(editItem);
     setAmountValue(editItem.amount);
     setCategoryValue(editItem.category);
@@ -111,7 +115,6 @@ const UserExpenses = () => {
 
   const handleDeleteBtn = (id) => {
     deletingData(id);
-    setExpenseList((prev) => prev.filter((item) => item.id !== id));
   };
   return (
     <div className="flex w-[80%] mx-auto mt-20">
@@ -165,7 +168,7 @@ const UserExpenses = () => {
           <h3 className="text-lg font-bold">Category</h3>
         </div>
         <ul className="w-full p-4">
-          {expenseList.map((item) => (
+          {expenses.map((item) => (
             <li
               key={item.id}
               className="flex justify-between items-center my-2"

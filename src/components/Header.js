@@ -1,15 +1,19 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import appContext from "./context/appContext";
+
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { removeUserTokenId } from "./context/authSlice";
 
 const Header = () => {
-  const ctx = useContext(appContext);
+  const auth = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
   const nav = useNavigate();
   const handleLogout = () => {
-    ctx.removeUserTokenId();
+    dispatch(removeUserTokenId());
     nav("/login");
   };
+  console.log(auth);
   return (
     <header className="bg-blue-300 p-2 fixed top-0 left-0 w-full">
       <nav className="flex justify-between items-center px-8">
@@ -28,7 +32,7 @@ const Header = () => {
             </Link>
           </ul>
         </div>
-        {ctx.userLoginTokenId && (
+        {auth.userLoginInfo && (
           <div>
             <button onClick={handleLogout}>Logout</button>
           </div>

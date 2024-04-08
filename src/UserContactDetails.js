@@ -1,12 +1,15 @@
-import React, { useContext, useRef } from "react";
-import appContext from "./components/context/appContext";
+import React, { useRef } from "react";
+
+import { useSelector, useDispatch } from "react-redux";
+import { updatingProfile } from "./components/context/authSlice";
 
 const UserContactDetails = ({ handleCancel }) => {
   const fullName = useRef(null);
   const profilePhotoUrl = useRef(null);
-  const ctx = useContext(appContext);
 
-  console.log(ctx.userLoginTokenId);
+  const auth = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
+  console.log(auth.userLoginTokenId);
 
   const updateProfile = async () => {
     const response = await fetch(
@@ -14,7 +17,7 @@ const UserContactDetails = ({ handleCancel }) => {
       {
         method: "POST",
         body: JSON.stringify({
-          idToken: ctx.userLoginTokenId,
+          idToken: auth.userLoginTokenId,
           displayName: fullName.current.value,
           photoUrl: profilePhotoUrl.current.value,
         }),
@@ -29,7 +32,8 @@ const UserContactDetails = ({ handleCancel }) => {
     e.preventDefault();
     updateProfile();
     handleCancel();
-    ctx.updatingProfile();
+    dispatch(updatingProfile());
+
     fullName.current.value = "";
     profilePhotoUrl.current.value = "";
   };

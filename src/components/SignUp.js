@@ -1,17 +1,21 @@
-import React, { useContext, useRef, useState } from "react";
-import appContext from "./context/appContext";
+import React, { useRef, useState } from "react";
+
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { saveUserInfo, updatingProfile } from "./context/authSlice";
 
 const SignUp = () => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
   const [isLoginForm, setIsLoginForm] = useState(false);
-  const ctx = useContext(appContext);
+
+  const auth = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
   const nav = useNavigate();
   const [isForgetPassword, setIsForgetPassword] = useState(false);
 
-  console.log(ctx);
+  console.log(auth);
   const signUpFunction = async () => {
     try {
       const response = await fetch(
@@ -55,17 +59,21 @@ const SignUp = () => {
           },
         }
       );
+      console.log(response);
       const data = await response.json();
       if (!response.ok) {
         throw new Error(response.message);
       }
       console.log(data);
-      ctx.saveUserInfo({
-        loginId: data.idToken,
-        email: data.email,
-      });
+      dispatch(
+        saveUserInfo({
+          loginId: data.idToken,
+          email: data.email,
+        })
+      );
+
       if (data.displayName && data.profilePicture) {
-        ctx.updatingProfile();
+        dispatch(updatingProfile());
       }
 
       nav("/");

@@ -1,11 +1,15 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import UserContactDetails from "../UserContactDetails";
-import appContext from "./context/appContext";
+
 import UserExpenses from "./UserExpenses";
+import { useSelector, useDispatch } from "react-redux";
+import { verifyEmail } from "./context/authSlice";
 
 const Home = () => {
   const [isProfileComplete, setIsProfileComplete] = useState(false);
-  const ctx = useContext(appContext);
+
+  const auth = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
 
   const handleCancelBtn = () => {
     setIsProfileComplete(false);
@@ -19,7 +23,7 @@ const Home = () => {
           method: "POST",
           body: JSON.stringify({
             requestType: "VERIFY_EMAIL",
-            idToken: ctx.userLoginTokenId,
+            idToken: auth.userLoginTokenId,
           }),
           headers: {
             "Content-Type": "application/json",
@@ -31,6 +35,7 @@ const Home = () => {
         throw new Error(response.message);
       }
       console.log(data);
+      dispatch(verifyEmail());
       alert("Verification link sent to the email.");
     } catch (err) {
       alert(err);
@@ -44,7 +49,7 @@ const Home = () => {
     <div className="p-4">
       <div className="flex justify-between  border-b border-solid border-gray-400 items-center shadow-lg pb-2">
         <p>Welcome To Expense Tracker</p>
-        {!ctx.emailVerified && (
+        {!auth.emailVerified && (
           <button
             className="bg-gray-400 px-2 py-1 rounded-lg"
             onClick={handleEmailVerification}
@@ -52,7 +57,7 @@ const Home = () => {
             Verify Email
           </button>
         )}
-        {!ctx.profileUpdated && (
+        {!auth.profileUpdated && (
           <div className="flex bg-orange-200 px-2 rounded-lg max-w-[500px]">
             <p>
               {isProfileComplete
